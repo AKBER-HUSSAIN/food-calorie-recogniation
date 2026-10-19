@@ -4,7 +4,11 @@ import ImageUploader from './components/ImageUploader';
 import PredictionResults from './components/PredictionResults';
 import { AlertTriangle } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+// Auto-detect: use local backend in development, Render backend in production
+const IS_LOCAL = typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ||
+  (IS_LOCAL ? 'http://127.0.0.1:8000' : 'https://food-calorie-recogniation.onrender.com');
 
 export default function App() {
   const [selectedFile, setSelectedFile] = useState(null);
