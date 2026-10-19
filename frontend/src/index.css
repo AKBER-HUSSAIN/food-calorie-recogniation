@@ -1,0 +1,290 @@
+@import "tailwindcss";
+
+/* ============================================
+   DESIGN TOKENS — NutriLens Design System
+   ============================================ */
+
+/* Light Theme (default) */
+:root,
+html.light {
+  /* Backgrounds */
+  --bg-page: #FAF9F4;
+  --bg-surface: #FFFFFF;
+  --bg-surface-raised: #FFFFFF;
+  --bg-surface-sunken: #F3F2EC;
+  --bg-overlay: rgba(23, 61, 50, 0.06);
+
+  /* Text */
+  --text-primary: #173D32;
+  --text-secondary: #4A6259;
+  --text-tertiary: #7D918A;
+  --text-muted: #A3B3AC;
+  --text-inverse: #FFFFFF;
+
+  /* Accent — Electric Lime */
+  --accent-lime: #C7F464;
+  --accent-lime-hover: #B8E854;
+  --accent-lime-subtle: rgba(199, 244, 100, 0.12);
+  --accent-lime-text: #173D32;
+
+  /* Accent — Vibrant Coral */
+  --accent-coral: #FF735C;
+  --accent-coral-hover: #FF5E44;
+  --accent-coral-subtle: rgba(255, 115, 92, 0.10);
+  --accent-coral-text: #FFFFFF;
+
+  /* Accent — Deep Forest */
+  --accent-forest: #173D32;
+  --accent-forest-hover: #0F2D24;
+  --accent-forest-subtle: rgba(23, 61, 50, 0.06);
+
+  /* Borders */
+  --border-default: #E4E3DD;
+  --border-subtle: #EDECE6;
+  --border-strong: #D0CFC9;
+  --border-focus: #C7F464;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(23, 61, 50, 0.04);
+  --shadow-md: 0 2px 8px rgba(23, 61, 50, 0.06), 0 1px 2px rgba(23, 61, 50, 0.04);
+  --shadow-lg: 0 4px 16px rgba(23, 61, 50, 0.08), 0 2px 4px rgba(23, 61, 50, 0.04);
+  --shadow-xl: 0 8px 32px rgba(23, 61, 50, 0.10), 0 4px 8px rgba(23, 61, 50, 0.06);
+
+  /* Nutrition accent colors */
+  --nutrition-calories: #FF735C;
+  --nutrition-calories-bg: rgba(255, 115, 92, 0.08);
+  --nutrition-calories-border: rgba(255, 115, 92, 0.20);
+  --nutrition-protein: #2DA87E;
+  --nutrition-protein-bg: rgba(45, 168, 126, 0.08);
+  --nutrition-protein-border: rgba(45, 168, 126, 0.20);
+  --nutrition-carbs: #E8A838;
+  --nutrition-carbs-bg: rgba(232, 168, 56, 0.08);
+  --nutrition-carbs-border: rgba(232, 168, 56, 0.20);
+  --nutrition-fat: #7C6AE8;
+  --nutrition-fat-bg: rgba(124, 106, 232, 0.08);
+  --nutrition-fat-border: rgba(124, 106, 232, 0.20);
+
+  /* Status */
+  --status-success: #2DA87E;
+  --status-success-bg: rgba(45, 168, 126, 0.08);
+  --status-error: #E5484D;
+  --status-error-bg: rgba(229, 72, 77, 0.08);
+  --status-warning: #E8A838;
+  --status-warning-bg: rgba(232, 168, 56, 0.08);
+
+  /* Scrollbar */
+  --scrollbar-track: var(--bg-surface-sunken);
+  --scrollbar-thumb: var(--border-strong);
+
+  color-scheme: light;
+}
+
+/* Dark Theme */
+html.dark {
+  --bg-page: #111714;
+  --bg-surface: #1A201C;
+  --bg-surface-raised: #222723;
+  --bg-surface-sunken: #0E1310;
+  --bg-overlay: rgba(0, 0, 0, 0.4);
+
+  --text-primary: #E8ECE9;
+  --text-secondary: #A3B3AC;
+  --text-tertiary: #6E7F77;
+  --text-muted: #4A5B54;
+  --text-inverse: #173D32;
+
+  --accent-lime: #C7F464;
+  --accent-lime-hover: #D4FF78;
+  --accent-lime-subtle: rgba(199, 244, 100, 0.10);
+  --accent-lime-text: #111714;
+
+  --accent-coral: #FF735C;
+  --accent-coral-hover: #FF8A78;
+  --accent-coral-subtle: rgba(255, 115, 92, 0.10);
+  --accent-coral-text: #111714;
+
+  --accent-forest: #C7F464;
+  --accent-forest-hover: #D4FF78;
+  --accent-forest-subtle: rgba(199, 244, 100, 0.06);
+
+  --border-default: #2A322D;
+  --border-subtle: #222A25;
+  --border-strong: #3A443D;
+  --border-focus: #C7F464;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.20);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.16);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.28), 0 2px 4px rgba(0, 0, 0, 0.20);
+  --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.36), 0 4px 8px rgba(0, 0, 0, 0.24);
+
+  --nutrition-calories: #FF8A78;
+  --nutrition-calories-bg: rgba(255, 115, 92, 0.10);
+  --nutrition-calories-border: rgba(255, 115, 92, 0.22);
+  --nutrition-protein: #3DBF8E;
+  --nutrition-protein-bg: rgba(45, 168, 126, 0.10);
+  --nutrition-protein-border: rgba(45, 168, 126, 0.22);
+  --nutrition-carbs: #F0B848;
+  --nutrition-carbs-bg: rgba(232, 168, 56, 0.10);
+  --nutrition-carbs-border: rgba(232, 168, 56, 0.22);
+  --nutrition-fat: #9484F0;
+  --nutrition-fat-bg: rgba(124, 106, 232, 0.10);
+  --nutrition-fat-border: rgba(124, 106, 232, 0.22);
+
+  --status-success: #3DBF8E;
+  --status-success-bg: rgba(45, 168, 126, 0.10);
+  --status-error: #F06467;
+  --status-error-bg: rgba(229, 72, 77, 0.10);
+  --status-warning: #F0B848;
+  --status-warning-bg: rgba(232, 168, 56, 0.10);
+
+  --scrollbar-track: var(--bg-surface-sunken);
+  --scrollbar-thumb: var(--border-strong);
+
+  color-scheme: dark;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    margin: 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  ::selection {
+    background: var(--accent-lime);
+    color: var(--accent-lime-text);
+  }
+
+  /* Smooth theme transition for all themed elements */
+  *:not(.no-transition) {
+    transition-property: background-color, border-color, color, box-shadow, opacity;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================
+   KEYFRAMES
+   ============================================ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 0; }
+  100% { transform: scale(0.8); opacity: 0; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes scan-line {
+  0% { top: 0%; }
+  50% { top: 90%; }
+  100% { top: 0%; }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease forwards;
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+
+/* Focus ring utility */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}

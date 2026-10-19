@@ -1,0 +1,17 @@
+{
+  "model_type": "EfficientNetB0 multi-output image regression",
+  "targets_order": [
+    "calories",
+    "protein_g",
+    "carbs_g",
+    "fat_g"
+  ],
+  "image_size": [
+    224,
+    224
+  ],
+  "input_pixel_range": "float32 0..255; EfficientNetB0 internal rescaling",
+  "nutrition_semantics": "Estimated nutrition for the photographed plate",
+  "dataset": "Nutrition5k",
+  "warning": "May generalize poorly to Indian dishes not represented in training data."
+}
