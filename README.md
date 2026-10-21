@@ -3,8 +3,10 @@ title: Food Recognition & Calorie Estimation API
 emoji: 🥗
 colorFrom: green
 colorTo: lime
-sdk: docker
-app_port: 7860
+sdk: gradio
+sdk_version: 4.44.0
+app_file: app.py
+pinned: false
 ---
 
 # Food Recognition and Calorie Estimation Using Machine Learning
