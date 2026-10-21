@@ -258,6 +258,10 @@ class FoodClassifier:
             "preprocessing_time_ms": prep_time_ms,
         }
 
+        # Clear intermediate memory before running the second model
+        import gc
+        gc.collect()
+
         # 3. Nutrition estimation reusing the preprocessed tensor & timing separately
         nutr_time_ms = 0.0
         try:
@@ -268,6 +272,8 @@ class FoodClassifier:
             result["nutrition_time_ms"] = nutr_time_ms
         except Exception as exc:
             logger.warning("Nutrition prediction failed (non-fatal): %s", exc)
+
+        gc.collect()
 
         total_inference_ms = round(cls_time_ms + nutr_time_ms, 2)
         result["inference_time_ms"] = total_inference_ms

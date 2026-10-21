@@ -12,5 +12,9 @@ services:
         value: "0"
       - key: TF_CPP_MIN_LOG_LEVEL
         value: "2"
+      - key: MALLOC_TRIM_THRESHOLD_
+        value: "100000"
+      - key: PYTHONMALLOC
+        value: "malloc"
     healthCheckPath: /health
     autoDeploy: true
