@@ -3,21 +3,28 @@ FastAPI Backend for Food Recognition and Calorie Estimation.
 
 Endpoints:
 - GET  /        : API overview and links
-- GET  /health  : Check if API and ML model are ready
-- POST /predict : Accept multipart/form-data image, classify food, return top 5 predictions
+- GET  /health  : Check if API and ML models are loaded and healthy
+- POST /predict : Accept multipart/form-data image, classify food, and estimate nutrition
+- POST /predict-nutrition : Standalone nutrition estimation endpoint
 """
 
 import logging
+import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, File, HTTPException, UploadFile, status
+from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
 from backend.predictor import classifier, nutrition_classifier
-from backend.schemas import HealthResponse, PredictionResponse, NutritionInfo, NutritionPredictionResponse
+from backend.schemas import (
+    HealthResponse,
+    NutritionInfo,
+    NutritionPredictionResponse,
+    PredictionResponse,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -42,14 +49,14 @@ MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024  # 15 MB limit
 async def lifespan(app: FastAPI):
     """
     Lifespan event handler.
-    Loads the trained model and class names on API startup,
-    and handles graceful shutdown.
+    Loads and warms up the trained models on API startup so the process is
+    immediately ready for incoming HTTP traffic without cold inference delays.
     """
-    logger.info("Application starting up... Loading model and class names.")
+    logger.info("Application starting up... Initializing ML models.")
     try:
         classifier.load()
         nutrition_classifier.load()
-        logger.info("Food classification model initialized and ready for requests.")
+        logger.info("Food classification and nutrition models initialized, warmed up, and ready.")
     except Exception as exc:
         logger.error(
             "CRITICAL: Failed to load food recognition model at startup: %s",
@@ -66,7 +73,8 @@ app = FastAPI(
     title="Food Recognition & Calorie Estimation API",
     description=(
         "Backend API powered by FastAPI and TensorFlow/Keras EfficientNetB0. "
-        "Classifies combined Indian and international food categories and returns confidence scores and top-5 predictions."
+        "Classifies combined Indian and international food categories and returns confidence scores, "
+        "top-5 predictions, and Nutrition5k estimations."
     ),
     version="1.0.0",
     lifespan=lifespan,
@@ -74,7 +82,7 @@ app = FastAPI(
 
 # ---------------------------------------------------------
 # CORS Configuration
-# Enables frontend development from localhost (React, Vue, Vite, vanilla HTML, etc.)
+# Enables frontend development from localhost and production deployments
 # ---------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
@@ -108,7 +116,7 @@ async def root():
     "/health",
     response_model=HealthResponse,
     summary="System and Model Health Check",
-    description="Verifies whether the FastAPI server is running and the TensorFlow model is loaded.",
+    description="Verifies whether the FastAPI server is running and the models are loaded.",
     tags=["Diagnostics"],
 )
 async def health_check():
@@ -128,15 +136,14 @@ async def health_check():
     )
 
 
-
 @app.post(
     "/predict",
     response_model=PredictionResponse,
     summary="Classify Food Image",
     description=(
         "Upload an image (JPEG, PNG, WEBP, BMP) using multipart/form-data. "
-        "The model will classify the food item and return the predicted category, "
-        "confidence score, and top-5 predictions."
+        "The model classifies the food item and returns the predicted category, "
+        "confidence score, top-5 predictions, and nutrition estimates."
     ),
     tags=["Inference"],
 )
@@ -144,8 +151,9 @@ async def predict_food(
     file: UploadFile = File(..., description="Uploaded food photo (multipart/form-data)"),
 ):
     """
-    Accepts an uploaded image file, validates format, runs EfficientNetB0 inference,
-    and returns top-5 prediction results.
+    Accepts an uploaded image file, validates format, runs inference in a threadpool
+    (leaving the main asyncio loop unblocked for health checks and keepalive pings),
+    and returns top-5 prediction results along with nutrition data and timing metrics.
     """
     # 1. Verify model is loaded
     if not classifier.is_loaded or classifier.model is None:
@@ -161,7 +169,6 @@ async def predict_food(
     filename = file.filename or "unknown.jpg"
     ext = Path(filename).suffix.lower()
 
-    # Validate file extension and MIME type
     is_valid_mime = file.content_type and file.content_type.lower() in ALLOWED_MIME_TYPES
     is_valid_ext = ext in ALLOWED_EXTENSIONS
 
@@ -196,11 +203,10 @@ async def predict_food(
             detail=f"Image size exceeds the maximum allowed limit of {MAX_FILE_SIZE_BYTES // (1024 * 1024)}MB.",
         )
 
-    # 4. Perform prediction via classifier
+    # 4. Perform prediction via threadpool to prevent blocking the asyncio event loop
     try:
-        result = classifier.predict(contents)
+        result = await run_in_threadpool(classifier.predict, contents)
     except ValueError as val_err:
-        # Raised when PIL fails to parse image bytes
         logger.warning("Invalid image file submitted: %s", val_err)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -215,7 +221,7 @@ async def predict_food(
 
     # Build nutrition info if present in result
     nutrition_data = None
-    if "nutrition" in result:
+    if "nutrition" in result and result["nutrition"] is not None:
         nutrition_data = NutritionInfo(**result["nutrition"])
 
     return PredictionResponse(
@@ -227,6 +233,9 @@ async def predict_food(
         nutrition=nutrition_data,
         filename=filename,
         image_size=result["original_size"],
+        classifier_time_ms=result.get("classifier_time_ms"),
+        nutrition_time_ms=result.get("nutrition_time_ms"),
+        inference_time_ms=result.get("inference_time_ms"),
     )
 
 
@@ -294,7 +303,9 @@ async def predict_nutrition_only(
         )
 
     try:
-        nutrition_dict = nutrition_classifier.predict_nutrition(contents)
+        t0 = time.perf_counter()
+        nutrition_dict = await run_in_threadpool(nutrition_classifier.predict_nutrition, image_bytes=contents)
+        nutr_time_ms = round((time.perf_counter() - t0) * 1000, 2)
     except ValueError as val_err:
         logger.warning("Invalid image file submitted for nutrition: %s", val_err)
         raise HTTPException(
@@ -312,5 +323,5 @@ async def predict_nutrition_only(
         success=True,
         nutrition=NutritionInfo(**nutrition_dict),
         filename=filename,
+        nutrition_time_ms=nutr_time_ms,
     )
-

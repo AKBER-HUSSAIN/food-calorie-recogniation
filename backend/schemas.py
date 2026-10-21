@@ -11,6 +11,8 @@ class TopPrediction(BaseModel):
     food_class: str = Field(..., description="Food class name (e.g., 'pizza')")
     confidence: float = Field(..., description="Prediction confidence score between 0 and 1")
     percentage: str = Field(..., description="Confidence formatted as percentage string (e.g., '94.21%')")
+
+
 class NutritionInfo(BaseModel):
     """Estimated nutrition values for the food item."""
     calories: float = Field(..., description="Estimated calories in kilocalories")
@@ -29,6 +31,9 @@ class PredictionResponse(BaseModel):
     nutrition: Optional[NutritionInfo] = Field(None, description="Estimated nutrition values")
     filename: Optional[str] = Field(None, description="Original filename of uploaded image")
     image_size: Optional[str] = Field(None, description="Original resolution of uploaded image (WxH)")
+    classifier_time_ms: Optional[float] = Field(None, description="Classifier model inference time in milliseconds")
+    nutrition_time_ms: Optional[float] = Field(None, description="Nutrition model inference time in milliseconds")
+    inference_time_ms: Optional[float] = Field(None, description="Total ML inference time in milliseconds")
 
 
 class HealthResponse(BaseModel):
@@ -48,4 +53,4 @@ class NutritionPredictionResponse(BaseModel):
     nutrition: NutritionInfo = Field(..., description="Estimated nutrition values")
     filename: Optional[str] = Field(None, description="Original filename of uploaded image")
     image_size: Optional[str] = Field(None, description="Original resolution of uploaded image (WxH)")
-
+    nutrition_time_ms: Optional[float] = Field(None, description="Nutrition model inference time in milliseconds")
