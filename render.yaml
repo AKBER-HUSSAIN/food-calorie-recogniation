@@ -1,10 +1,10 @@
 services:
   - type: web
-    name: food-calorie-backend
+    name: food-calorie-recogniation
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port 10000 --timeout-keep-alive 75 --workers 1
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-10000} --timeout-keep-alive 75 --workers 1
     envVars:
       - key: PYTHON_VERSION
         value: "3.11"
