@@ -1,6 +1,16 @@
+---
+title: Food Recognition & Calorie Estimation API
+emoji: 🥗
+colorFrom: green
+colorTo: lime
+sdk: docker
+app_port: 7860
+---
+
 # Food Recognition and Calorie Estimation Using Machine Learning
 
 Full-stack application for food recognition powered by **FastAPI**, **TensorFlow/Keras** (EfficientNetB0 on combined Indian and international Food-101 datasets), and a modern **React + Vite + Tailwind CSS** frontend.
+
 
 ---
 
